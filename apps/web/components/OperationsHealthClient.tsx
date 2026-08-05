@@ -30,7 +30,10 @@ export function OperationsHealthClient() {
       const response = await fetch("/api/operator/health", { cache: "no-store" });
       if (response.status === 401) {
         window.location.assign(
-          `/api/auth/login?reason=session_expired&returnTo=${encodeURIComponent(window.location.pathname)}`,
+          new URL(
+            `/api/auth/login?reason=session_expired&returnTo=${encodeURIComponent(window.location.pathname)}`,
+            window.location.origin,
+          ).toString(),
         );
         return;
       }
@@ -43,9 +46,12 @@ export function OperationsHealthClient() {
   }, []);
 
   useEffect(() => {
-    void load();
+    const initial = window.setTimeout(() => void load(), 0);
     const timer = window.setInterval(() => void load(), 15_000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(timer);
+    };
   }, [load]);
 
   return (

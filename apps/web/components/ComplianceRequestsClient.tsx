@@ -33,7 +33,8 @@ export function ComplianceRequestsClient() {
   }, []);
 
   useEffect(() => {
-    void load();
+    const initial = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(initial);
   }, [load]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {

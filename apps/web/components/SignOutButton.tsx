@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 
+function navigateAway(path: string) {
+  window.location.href = /^https?:\/\//i.test(path)
+    ? path
+    : new URL(path, window.location.origin).toString();
+}
+
 export function SignOutButton() {
   const [busy, setBusy] = useState(false);
 
@@ -21,16 +27,16 @@ export function SignOutButton() {
       });
 
       if (!response.ok) {
-        window.location.href = "/";
+        navigateAway("/");
         return;
       }
 
       const body = (await response.json().catch(() => null)) as {
         redirectTo?: string;
       } | null;
-      window.location.href = body?.redirectTo || "/";
+      navigateAway(body?.redirectTo || "/");
     } catch {
-      window.location.href = "/";
+      navigateAway("/");
     }
   }
 

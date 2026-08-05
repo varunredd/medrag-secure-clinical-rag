@@ -105,16 +105,20 @@ export function DocumentsClient({ canUpload, canRetry, canDelete, canGovern }: P
   }, []);
 
   useEffect(() => {
-    void load();
+    const initial = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(initial);
   }, [load]);
 
   useEffect(() => {
-    void clinicalFetch("/api/backend/api/v1/upload-policy")
-      .then(async (response) => {
-        if (!response.ok) return;
-        setPolicy((await response.json()) as UploadPolicy);
-      })
-      .catch(() => undefined);
+    const initial = window.setTimeout(() => {
+      void clinicalFetch("/api/backend/api/v1/upload-policy")
+        .then(async (response) => {
+          if (!response.ok) return;
+          setPolicy((await response.json()) as UploadPolicy);
+        })
+        .catch(() => undefined);
+    }, 0);
+    return () => window.clearTimeout(initial);
   }, []);
 
   const hasActive = documents.some((document) =>
@@ -183,7 +187,10 @@ export function DocumentsClient({ canUpload, canRetry, canDelete, canGovern }: P
     if (result.status === 401) {
       const returnTo = window.location.pathname;
       window.location.assign(
-        `/api/auth/login?reason=session_expired&returnTo=${encodeURIComponent(returnTo)}`,
+        new URL(
+          `/api/auth/login?reason=session_expired&returnTo=${encodeURIComponent(returnTo)}`,
+          window.location.origin,
+        ).toString(),
       );
       return;
     }

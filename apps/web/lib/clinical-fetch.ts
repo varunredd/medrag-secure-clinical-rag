@@ -31,7 +31,10 @@ export async function clinicalFetch(
   if (response.status === 401) {
     const returnTo = `${window.location.pathname}${window.location.search}`;
     window.location.assign(
-      `/api/auth/login?reason=session_expired&returnTo=${encodeURIComponent(returnTo)}`,
+      new URL(
+        `/api/auth/login?reason=session_expired&returnTo=${encodeURIComponent(returnTo)}`,
+        window.location.origin,
+      ).toString(),
     );
     throw new ClinicalApiError("Secure session expired", 401, {
       code: "UNAUTHENTICATED",

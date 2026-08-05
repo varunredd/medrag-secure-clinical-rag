@@ -3,17 +3,19 @@
 import { useEffect, useState } from "react";
 
 export function SessionExpiryBanner({ expiresAt }: { expiresAt: number }) {
-  const [remaining, setRemaining] = useState(expiresAt - Date.now());
+  const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    const timer = window.setInterval(
-      () => setRemaining(expiresAt - Date.now()),
-      15_000,
-    );
-    return () => window.clearInterval(timer);
+    const tick = () => setRemaining(expiresAt - Date.now());
+    const initial = window.setTimeout(tick, 0);
+    const timer = window.setInterval(tick, 15_000);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(timer);
+    };
   }, [expiresAt]);
 
-  if (remaining > 5 * 60_000) {
+  if (remaining === null || remaining > 5 * 60_000) {
     return null;
   }
 

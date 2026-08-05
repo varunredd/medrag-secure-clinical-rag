@@ -81,9 +81,12 @@ export function OverviewClient({
   }, []);
 
   useEffect(() => {
-    void load();
+    const initial = window.setTimeout(() => void load(), 0);
     const timer = window.setInterval(() => void load(), 10_000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(timer);
+    };
   }, [load]);
 
   async function redrive(jobId: string) {
