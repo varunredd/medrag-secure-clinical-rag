@@ -1,0 +1,20 @@
+SYNTHETIC TRAINING RECORD — NOT A REAL PATIENT
+
+Encounter date: 2026-07-14
+Patient reference: SYNTH-0042
+
+Reason for visit:
+Follow-up for blood-pressure management and medication adherence.
+
+Observations:
+Blood pressure 138/86 mmHg. Heart rate 74 bpm. The patient reports no chest pain,
+shortness of breath, dizziness, or medication adverse effects. Home readings were
+between 132/82 and 142/88 over the prior two weeks.
+
+Assessment:
+Hypertension is improving but remains above the individualized target. No acute red flags.
+
+Plan:
+Continue the existing medication regimen. Reinforce reduced sodium intake and regular
+walking as tolerated. Record home blood pressure four times weekly. Follow up in six weeks.
+Seek urgent care for chest pain, severe shortness of breath, fainting, or new neurologic symptoms.

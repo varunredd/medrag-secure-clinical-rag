@@ -1,0 +1,8 @@
+.git
+**/target
+**/.venv
+**/__pycache__
+**/node_modules
+**/.next
+secrets
+.env

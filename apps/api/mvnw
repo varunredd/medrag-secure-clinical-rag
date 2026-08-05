@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+MVN_VERSION=3.9.11
+BASE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+DIST_DIR="${MAVEN_USER_HOME:-$HOME/.m2}/wrapper/dists/apache-maven-$MVN_VERSION"
+MVN="$DIST_DIR/apache-maven-$MVN_VERSION/bin/mvn"
+if [ ! -x "$MVN" ]; then
+  mkdir -p "$DIST_DIR"
+  ARCHIVE="$DIST_DIR/apache-maven-$MVN_VERSION-bin.zip"
+  URL="https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/$MVN_VERSION/apache-maven-$MVN_VERSION-bin.zip"
+  command -v curl >/dev/null 2>&1 || { echo "curl is required" >&2; exit 1; }
+  command -v unzip >/dev/null 2>&1 || { echo "unzip is required" >&2; exit 1; }
+  curl -fL "$URL" -o "$ARCHIVE"
+  unzip -q -o "$ARCHIVE" -d "$DIST_DIR"
+  rm -f "$ARCHIVE"
+fi
+exec "$MVN" -f "$BASE_DIR/pom.xml" "$@"

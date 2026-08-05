@@ -1,0 +1,5 @@
+FROM maven:3.9.11-eclipse-temurin-21
+WORKDIR /workspace
+COPY pom.xml ./
+RUN mvn -B -q dependency:go-offline
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-XX:MaxRAMPercentage=70"]

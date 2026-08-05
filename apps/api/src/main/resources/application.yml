@@ -1,0 +1,108 @@
+spring:
+  application:
+    name: medrag-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/medrag_core}
+    username: ${DB_USERNAME:medrag_core}
+    password: ${DB_PASSWORD:medrag_core}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 2
+      connection-timeout: 3000
+      validation-timeout: 1000
+  data:
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379/2}
+      connect-timeout: 2s
+      timeout: 2s
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 26MB
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OIDC_ISSUER_URI:http://localhost:8081/realms/medrag}
+          jwk-set-uri: ${OIDC_JWK_SET_URI:http://localhost:8081/realms/medrag/protocol/openid-connect/certs}
+server:
+  port: 8080
+  shutdown: graceful
+  forward-headers-strategy: framework
+  error:
+    include-message: never
+    include-stacktrace: never
+management:
+  server:
+    port: 9091
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  metrics:
+    tags:
+      application: medrag-api
+logging:
+  pattern:
+    level: "%5p [requestId:%X{requestId:-}] [tenant:%X{tenantId:-}] [actor:%X{actorId:-}]"
+  level:
+    root: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+
+medrag:
+  security:
+    expected-audience: ${OIDC_AUDIENCE:medrag-api}
+    internal-issuer: medrag-api
+    internal-audience: medrag-ai
+    internal-token-ttl: PT60S
+    internal-key-id: ${INTERNAL_JWT_KEY_ID:medrag-internal-dev-1}
+    private-key-path: ${INTERNAL_JWT_PRIVATE_KEY_PATH:../../secrets/internal-private.pem}
+    public-key-path: ${INTERNAL_JWT_PUBLIC_KEY_PATH:../../secrets/internal-public.pem}
+  ai:
+    base-url: ${AI_BASE_URL:http://localhost:8000}
+    connect-timeout: PT2S
+    response-timeout: PT45S
+  storage:
+    endpoint: ${S3_ENDPOINT:http://localhost:9000}
+    access-key: ${S3_ACCESS_KEY:medrag}
+    secret-key: ${S3_SECRET_KEY:medrag-password}
+    region: ${S3_REGION:us-east-1}
+    document-bucket: ${S3_DOCUMENT_BUCKET:medrag-documents}
+    sse-algorithm: ${S3_SSE_ALGORITHM:}
+    kms-key-id: ${S3_KMS_KEY_ID:}
+    use-default-credentials: ${S3_USE_DEFAULT_CREDENTIALS:false}
+    path-style-access-enabled: ${S3_PATH_STYLE_ACCESS_ENABLED:true}
+  uploads:
+    max-bytes: 26214400
+    allowed-mime-types: application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain
+  clamav:
+    host: ${CLAMAV_HOST:localhost}
+    port: ${CLAMAV_PORT:3310}
+    timeout: PT30S
+  cors:
+    allowed-origins: ${APP_ALLOWED_ORIGINS:http://localhost:3000}
+  jobs:
+    poll-delay: 5000
+    lease-duration: PT10M
+    heartbeat-interval: PT1M
+    parallelism: 4
+  rate-limits:
+    general-per-minute: 120
+    queries-per-minute: 30
+    uploads-per-minute: 20

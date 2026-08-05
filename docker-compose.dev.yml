@@ -1,0 +1,44 @@
+# Local development override. Production-like images in docker-compose.yml remain immutable.
+services:
+  api:
+    profiles: ["dev"]
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./apps/api:/workspace
+      - maven-cache:/root/.m2
+      - ./secrets/internal-private.pem:/run/secrets/internal-private.pem:ro
+      - ./secrets/internal-public.pem:/run/secrets/internal-public.pem:ro
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  ai:
+    profiles: ["dev"]
+    build:
+      context: ./services/ai
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./services/ai:/workspace
+      - model-cache:/root/.cache/huggingface
+    environment:
+      ENVIRONMENT: development
+
+  web:
+    profiles: ["dev"]
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.dev
+    command: ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
+    volumes:
+      - ./apps/web:/workspace
+      - web-node-modules:/workspace/node_modules
+      - web-next-cache:/workspace/.next
+    environment:
+      NODE_ENV: development
+
+volumes:
+  maven-cache: {}
+  model-cache: {}
+  web-node-modules: {}
+  web-next-cache: {}
